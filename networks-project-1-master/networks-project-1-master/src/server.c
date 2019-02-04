@@ -68,7 +68,7 @@ void setupServer()
 	char data[11];
 	if ((messageSize = recv(incomingSocket,data,length,0)) < 0)
 		diep("recv() failed");
-
+	sleep(1);
 	printf("Got: %s\n",data);
 	reverseString(data);
 	
