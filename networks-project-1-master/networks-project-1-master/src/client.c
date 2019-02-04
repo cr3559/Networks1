@@ -36,7 +36,9 @@ void setupClient()
     if (connect(clientSocket, (struct sockaddr*)&serverInfo,sizeof(serverInfo)) < 0){
 	diep("connect() failed");}
 	
-	puts("Type a 10 character message below:");
+	int sendCount = 1;
+	do{
+	printf("Type a 10 character message: ");
 	
     char data[11];
 	scanf("%s", data);
@@ -47,7 +49,7 @@ void setupClient()
 			diep("send() sent a different number of bytes than expected.");
 		}
 	
-	puts("Sent message to server");
+	puts("Sent message to Server");
 
 	char datab[11];
 	if (recv(clientSocket,datab,11,0) < 0)
@@ -56,6 +58,9 @@ void setupClient()
 		}
 	
 	printf("Received Message from Server: %s\n", datab);
+	sendCount++;
+	
+	}while(sendCount < 10);
 
     close(clientSocket);
 }

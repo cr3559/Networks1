@@ -61,6 +61,8 @@ void setupServer()
 	if ((incomingSocket = accept(servSocket,(struct sockaddr*)&clientInfo,(socklen_t*)&clientLen)) < 0)
 		diep("accept() failed");
 
+	int requests = 0;
+	while(requests < 10){
 	int messageSize;
 	int length = 11;
 	char data[11];
@@ -72,7 +74,10 @@ void setupServer()
 	
 	write(incomingSocket, data, strlen(data));
 	puts("Sent reversed message back to Client");
+	
+	requests++;
 	fflush(stdout);
+	}
 
 	close(incomingSocket);
 
