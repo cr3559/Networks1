@@ -42,6 +42,7 @@ void setupClient()
 	
     char data[11];
 	scanf("%s", data);
+	strcat(data, "\n");
 	
     int length = strlen(data);
     if (send(clientSocket,data,length,0) != length)
@@ -50,7 +51,7 @@ void setupClient()
 		}
 	
 	puts("Sent message to Server");
-
+	sleep(1);
 	char datab[11];
 	if (recv(clientSocket,datab,11,0) < 0)
 		{
