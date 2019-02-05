@@ -19,14 +19,48 @@
  * James Marah
  * Server - C version
  */
-
+int servSocket;
+int incomingSocket;
+struct sockaddr_in clientInfo;
 // Print the error and quit.
 void diep(char *s)
 {
 	perror(s);
 	exit(1);
 }
- 
+
+void *clientHandler(void *cl)
+{
+	int clientLen = sizeof(clientInfo);
+	int requests = 0;
+	while(requests < 10)// we need to loop here because Java must make a new connection every time
+	{		
+	if ((incomingSocket = accept(servSocket,(struct sockaddr*)&clientInfo,(socklen_t*)&clientLen)) < 0)
+		diep("accept() failed");
+
+	
+	
+	int messageSize;
+	int length = 11;
+	char data[11];
+	
+	if ((messageSize = recv(incomingSocket,data,length,MSG_WAITALL)) < 0)
+	{
+		diep("recv() failed");
+	}
+	
+
+	printf("Got: %s\n",data);
+	reverseString(data);
+	write(incomingSocket, data, strlen(data));
+	puts("Sent reversed message back to Client");
+	
+	requests++;
+	fflush(stdout);
+
+	}
+	pthread_exit(0);
+}
 void reverseString(char s[])
 {
 	char stringReversed[11];
@@ -48,11 +82,10 @@ void reverseString(char s[])
 
 void setupServer()
 {
-	int servSocket;
-	int incomingSocket;
-
+	
+	pthread_t clientThread;
 	struct sockaddr_in serverInfo;
-	struct sockaddr_in clientInfo;
+	
 
 	// Sets up the socket
 	if ((servSocket = socket(PF_INET,SOCK_STREAM,IPPROTO_TCP)) < 0)
@@ -73,35 +106,11 @@ void setupServer()
 
 	// See if there is a connection to accept.  Do not know if it stops and waits
 	// for one.
-	int clientLen = sizeof(clientInfo);
-	int requests = 0;
-	while(requests < 10)// we need to loop here because Java must make a new connection every time
-	{
-	if ((incomingSocket = accept(servSocket,(struct sockaddr*)&clientInfo,(socklen_t*)&clientLen)) < 0)
-		diep("accept() failed");
-
+	//int clientLen = sizeof(clientInfo);
 	
+	pthread_create(&clientThread, NULL, &clientHandler, NULL);
+	pthread_join(&clientThread, NULL);
 	
-	int messageSize;
-	int length = 11;
-	char data[11];
-	
-	if ((messageSize = recv(incomingSocket,data,length,MSG_WAITALL)) < 0)
-	{
-		diep("recv() failed");
-	}
-	
-
-	printf("Got: %s\n",data);
-	reverseString(data);
-	sleep(1);
-	write(incomingSocket, data, strlen(data));
-	puts("Sent reversed message back to Client");
-	
-	requests++;
-	fflush(stdout);
-
-	}
 	close(incomingSocket);
 	
 
