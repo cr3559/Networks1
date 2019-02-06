@@ -40,14 +40,10 @@ void reverseString(char s[])
 	
 	memcpy(s,stringReversed,10);
 
-	
-
 }
 
 void *clientHandler(void *cl)
-{
-	
-	
+{	
 	int messageSize;
 	int length = 11;
 	char data[11];
@@ -75,20 +71,15 @@ void *clientHandler(void *cl)
 
 		
 	}
-	//shutdown(thisSocket, SHUT_RDWR);
-
+	
 	pthread_exit(0);
 }
 
 
 void setupServer()
 {
-	
-	
 	struct sockaddr_in serverInfo;
 	
-	
-
 	// Sets up the socket
 	if ((servSocket = socket(PF_INET,SOCK_STREAM,IPPROTO_TCP)) < 0)
 	    diep("socket() failed");
@@ -107,21 +98,19 @@ void setupServer()
 		diep("listen() failed");
 
 
-pthread_t clientThread; //the thread to be created
-int clientLen = sizeof(clientInfo);
+	pthread_t clientThread; //the thread to be created
+	int clientLen = sizeof(clientInfo);
 
 
-//Server continuously loops looking for new connections
+	//Server continuously loops looking for new connections
 	while(1)
 	{
-	
 
-
-	//Creates a new thread for each new accepted connection
-	while((incomingSocket = accept(servSocket,(struct sockaddr*)&clientInfo,(socklen_t*)&clientLen)))
-	{
+		//Creates a new thread for each new accepted connection
+		while((incomingSocket = accept(servSocket,(struct sockaddr*)&clientInfo,(socklen_t*)&clientLen)))
+		{
 			pthread_create(&clientThread, NULL, &clientHandler, NULL);
-	}
+		}
 
 	//Thread returns here after 10 messages sent
 	pthread_join(clientThread, NULL);
